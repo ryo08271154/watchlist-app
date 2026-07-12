@@ -1,0 +1,91 @@
+{
+  "expo": {
+    "name": "視聴記録",
+    "slug": "watchlist-app",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/images/icon.png",
+    "scheme": "ryo08271154watchlistapp",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.ryo08271154.watchlist"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1976D2"
+      },
+      "predictiveBackGestureEnabled": true,
+      "package": "com.ryo08271154.watchlist",
+      "versionCode": 1,
+      "blockedPermissions": ["android.permission.SYSTEM_ALERT_WINDOW"],
+      "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ]
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      "expo-web-browser",
+      "expo-status-bar",
+      "expo-calendar",
+      "react-native-legal",
+      [
+        "expo-sharing",
+        {
+          "ios": {
+            "enabled": true,
+            "activationRule": {
+              "supportsImageWithMaxCount": 5
+            }
+          },
+          "android": {
+            "enabled": true,
+            "singleShareMimeTypes": ["text/plain"],
+            "multipleShareMimeTypes": ["text/plain"]
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "expo-sharing-extension",
+                  "bundleIdentifier": "com.ryo08271154.watchlist.expo-sharing-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.ryo08271154.watchlist"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "3f246015-ccdc-4c7b-b53d-8f9f5016099f"
+      }
+    },
+    "owner": "ryo08271154"
+  }
+}
