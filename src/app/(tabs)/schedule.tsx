@@ -129,14 +129,39 @@ export default function ScheduleScreen() {
     notes: string,
     startDate: Date,
     endDate: Date,
-  ) {
+  ): Promise<Calendar.ExpoCalendarEvent | null> {
     // 重複防止
     const eventList = await calendar.listEvents(startDate, endDate);
-    const event = eventList.find((event) => event.notes === notes);
+    if (eventList.find((event) => event.notes === notes)) return null;
 
-    if (event) {
+    // 作成する
+    const event = await calendar?.createEvent({
+      title: title,
+      url: url,
+      notes: notes,
+      startDate: startDate,
+      endDate: endDate,
+      timeZone: "Asia/Tokyo",
+    });
+
+    console.log("createEvent", event);
+
+    return event;
+  }
+
+  async function updateEvent(
+    eventId: string,
+    title: string,
+    url: string,
+    notes: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<Calendar.ExpoCalendarEvent | null> {
+    try {
+      const event = await Calendar.ExpoCalendarEvent.get(eventId);
+
       // 更新する
-      event.update({
+      await event.update({
         title: title,
         url: url,
         notes: notes,
@@ -146,24 +171,21 @@ export default function ScheduleScreen() {
       });
 
       console.log("updateEvent", event);
-    } else {
-      // 作成する
-      const event = await calendar?.createEvent({
-        title: title,
-        url: url,
-        notes: notes,
-        startDate: startDate,
-        endDate: endDate,
-        timeZone: "Asia/Tokyo",
-      });
 
-      console.log("createEvent", event);
+      return event;
+    } catch (e) {
+      console.error(e);
+      return null;
     }
   }
 
   async function addEpisodesToCalendarEvents() {
     if (!calendarRef.current) return;
     try {
+      const calendarEventIds: Record<string, string> = JSON.parse(
+        (await AsyncStorage.getItem("calendarEventIds")) ?? "{}",
+      );
+
       // 予定追加
       for (const section of sections) {
         for (const episode of section) {
@@ -181,17 +203,42 @@ export default function ScheduleScreen() {
           const endDate = new Date(startDate);
           endDate.setMinutes(endDate.getMinutes() + 30);
 
-          await createEvent(
-            calendarRef.current,
-            `${title} ${episode.name}${episode.episodeTitle ? ` ${episode.episodeTitle}` : ""}`,
-            episode.url,
-            `${episode.url}`,
-            startDate,
-            endDate,
-          );
+          const eventTitle = `${title} ${episode.name}${episode.episodeTitle ? ` ${episode.episodeTitle}` : ""}`;
+          const eventUrl = episode.url;
+
+          // すでに追加していたら更新してなかったら作成
+          if (calendarEventIds[eventUrl]) {
+            await updateEvent(
+              calendarEventIds[eventUrl],
+              eventTitle,
+              eventUrl,
+              eventUrl,
+              startDate,
+              endDate,
+            );
+          } else {
+            const event = await createEvent(
+              calendarRef.current,
+              eventTitle,
+              eventUrl,
+              eventUrl,
+              startDate,
+              endDate,
+            );
+            if (event) {
+              calendarEventIds[eventUrl] = event.id;
+            }
+          }
         }
       }
-    } catch (e: any) {}
+
+      await AsyncStorage.setItem(
+        "calendarEventIds",
+        JSON.stringify(calendarEventIds),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   // カレンダー作成
@@ -204,6 +251,8 @@ export default function ScheduleScreen() {
     }
 
     if (!settings.useCalendar) return;
+
+    if (!sections) return;
 
     (async () => {
       const { status } = await Calendar.requestCalendarPermissions();
