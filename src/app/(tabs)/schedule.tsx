@@ -253,7 +253,7 @@ export default function ScheduleScreen() {
 
     if (!settings.useCalendar) return;
 
-    if (!sections) return;
+    if (sections.length === 0) return;
 
     (async () => {
       const { status } = await Calendar.requestCalendarPermissions();
@@ -281,6 +281,8 @@ export default function ScheduleScreen() {
   }, [sections]);
 
   async function handleRefresh() {
+    if (isValidating) return;
+
     setRefreshing(true);
     await getSchedule();
     setRefreshing(false);

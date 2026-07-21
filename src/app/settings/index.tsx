@@ -38,7 +38,7 @@ export default function SettingsScreen() {
         { text: "OK", onPress: reloadAppAsync },
       ]);
 
-      AsyncStorage.removeItem("calendarEventIds");
+      await AsyncStorage.removeItem("calendarEventIds");
     } catch {
       Alert.alert("エラー", "カレンダーを削除できませんでした");
     }
@@ -75,7 +75,7 @@ export default function SettingsScreen() {
         value={settings.useCalendar}
         onValueChange={async (value) => {
           if (value === false) {
-            deleteCalendar();
+            await deleteCalendar();
           }
           setSettings({ ...settings, useCalendar: value });
         }}
