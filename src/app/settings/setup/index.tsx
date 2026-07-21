@@ -30,13 +30,18 @@ export default function SetupScreen() {
       return;
     }
 
-    // カレンダーのidだけ消さないようにする
+    // カレンダー関係だけ消さないようにする
     const calendarId = await AsyncStorage.getItem("calendarId");
+    const calendarEventIds = await AsyncStorage.getItem("calendarEventIds");
 
     await AsyncStorage.clear();
 
     if (calendarId) {
       await AsyncStorage.setItem("calendarId", calendarId);
+    }
+
+    if (calendarEventIds) {
+      await AsyncStorage.setItem("calendarEventIds", calendarEventIds);
     }
 
     setSettings({ ...settings, serverUrl: url });

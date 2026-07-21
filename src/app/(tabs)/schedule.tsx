@@ -2,10 +2,12 @@ import { SettingsContext } from "@/context/SettingsContext";
 import { useServerValidation } from "@/hooks/useServerValidation";
 import { SectionItem } from "@/types/section";
 import { parseSection } from "@/utils/parse";
+import DateTimePicker from "@expo/ui/community/datetime-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import * as Calendar from "expo-calendar";
 import Constants from "expo-constants";
-import { useRouter } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -21,6 +23,8 @@ import Toast from "react-native-toast-message";
 export default function ScheduleScreen() {
   const { settings } = useContext(SettingsContext);
   const [sections, setSections] = useState<SectionItem[][]>([]);
+  const [startDate, setStartDate] = useState(new Date());
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const calendarRef = useRef<Calendar.ExpoCalendar | null>(null);
   const isInitializing = useRef(false);
   const router = useRouter();
@@ -28,11 +32,8 @@ export default function ScheduleScreen() {
   const { isValidating } = useServerValidation();
 
   async function getSchedule() {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 1);
-
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 14);
+    endDate.setDate(startDate.getDate() + 14);
 
     try {
       const response = await fetch(
@@ -279,66 +280,94 @@ export default function ScheduleScreen() {
     })();
   }, [sections]);
 
+  async function handleRefresh() {
+    setRefreshing(true);
+    await getSchedule();
+    setRefreshing(false);
+  }
+
+  useEffect(() => {
+    handleRefresh();
+  }, [startDate]);
+
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={async () => {
-            setRefreshing(true);
-            await getSchedule();
-            setRefreshing(false);
+    <>
+      <Tabs.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
+              <Ionicons size={28} name="calendar" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
+      {isDatePickerVisible && (
+        <DateTimePicker
+          value={startDate}
+          onValueChange={(event, date) => {
+            setStartDate(date);
+            setIsDatePickerVisible(false);
+          }}
+          onDismiss={() => {
+            setIsDatePickerVisible(false);
           }}
         />
-      }
-    >
-      {sections.map((items, index) => {
-        // 何もない日は表示しない
-        if (items.length === 0) return null;
+      )}
 
-        const date = new Date(
-          items[0].description
-            .split("\n")[0]
-            .replace("年", "-")
-            .replace("月", "-")
-            .replace("日", "T")
-            .replace(":", ":") + ":00",
-        );
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
+        {sections.map((items, index) => {
+          // 何もない日は表示しない
+          if (items.length === 0) return null;
 
-        return (
-          <View key={index}>
-            <Text style={styles.title}>
-              {date.toLocaleDateString("ja-JP", {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                weekday: "long",
-              })}
-            </Text>
+          const date = new Date(
+            items[0].description
+              .split("\n")[0]
+              .replace("年", "-")
+              .replace("月", "-")
+              .replace("日", "T")
+              .replace(":", ":") + ":00",
+          );
 
-            <ScrollView horizontal style={styles.section}>
-              {items.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={styles.titleItem}
-                  onPress={() => router.push(`/detail?url=${item.url}`)}
-                >
-                  <View style={styles.episodeItem}>
-                    <Text style={styles.episodeTitle} numberOfLines={2}>
-                      {item.episodeTitle}
-                    </Text>
-                  </View>
+          return (
+            <View key={index}>
+              <Text style={styles.title}>
+                {date.toLocaleDateString("ja-JP", {
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                  weekday: "long",
+                })}
+              </Text>
 
-                  <Text numberOfLines={2}>{item.name}</Text>
-                  <Text numberOfLines={2}>{item.description}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        );
-      })}
-    </ScrollView>
+              <ScrollView horizontal style={styles.section}>
+                {items.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.titleItem}
+                    onPress={() => router.push(`/detail?url=${item.url}`)}
+                  >
+                    <View style={styles.episodeItem}>
+                      <Text style={styles.episodeTitle} numberOfLines={2}>
+                        {item.episodeTitle}
+                      </Text>
+                    </View>
+
+                    <Text numberOfLines={2}>{item.name}</Text>
+                    <Text numberOfLines={2}>{item.description}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          );
+        })}
+      </ScrollView>
+    </>
   );
 }
 

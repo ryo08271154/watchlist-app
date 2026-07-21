@@ -37,6 +37,8 @@ export default function SettingsScreen() {
       Alert.alert("削除", "カレンダーを削除しました", [
         { text: "OK", onPress: reloadAppAsync },
       ]);
+
+      AsyncStorage.removeItem("calendarEventIds");
     } catch {
       Alert.alert("エラー", "カレンダーを削除できませんでした");
     }
@@ -71,7 +73,7 @@ export default function SettingsScreen() {
       </Text>
       <Switch
         value={settings.useCalendar}
-        onValueChange={(value) => {
+        onValueChange={async (value) => {
           if (value === false) {
             deleteCalendar();
           }
