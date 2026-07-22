@@ -75,6 +75,23 @@ export default function TabLayout() {
             <View style={{ flexDirection: "row", gap: 16 }}>
               <TouchableOpacity
                 onPress={() =>
+                  router.push(`/detail?url=${settings.serverUrl}/mypage/stats`)
+                }
+              >
+                <Ionicons size={28} name="bar-chart" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/myReviews")}>
+                <Ionicons size={28} name="star" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push(`/detail?url=${settings.serverUrl}/export`)
+                }
+              >
+                <Ionicons size={28} name="download" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
                   router.push(
                     `/detail?url=${settings.serverUrl}/accounts/profile`,
                   )

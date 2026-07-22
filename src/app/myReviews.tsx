@@ -1,4 +1,4 @@
-import { Mypage } from "@/components/Mypage";
+import { MyReview } from "@/components/MyReview";
 import { useServerValidation } from "@/hooks/useServerValidation";
 import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
 
@@ -11,10 +11,13 @@ export default function Layout() {
   return (
     <>
       <Tab.Navigator>
-        <Tab.Screen name="タイトル" component={() => <Mypage tab="titles" />} />
+        <Tab.Screen
+          name="タイトル"
+          component={() => <MyReview type="record" />}
+        />
         <Tab.Screen
           name="エピソード"
-          component={() => <Mypage tab="episodes" />}
+          component={() => <MyReview type="episode_record" />}
         />
       </Tab.Navigator>
     </>
