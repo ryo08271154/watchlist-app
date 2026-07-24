@@ -1,6 +1,8 @@
 import { SettingsContext } from "@/context/SettingsContext";
+import { useServerValidation } from "@/hooks/useServerValidation";
 import { SectionItem } from "@/types/section";
 import { parseSection } from "@/utils/parse";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -35,19 +37,37 @@ export function Mypage({ tab }: Props) {
   const { settings } = useContext(SettingsContext);
   const [sections, setSections] = useState<SectionItem[][]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const { isValidating } = useServerValidation();
 
   async function getSections() {
+    if (isValidating) return;
+
     try {
       const response = await fetch(`${settings.serverUrl}/mypage`);
-
-      setSections(
-        await parseSection(await response.text(), settings.serverUrl),
+      const data = await parseSection(
+        await response.text(),
+        settings.serverUrl,
       );
+
+      setSections(data);
+
+      await AsyncStorage.setItem("mypage", JSON.stringify(data));
     } catch {}
   }
   useEffect(() => {
+    (async () => {
+      try {
+        const cached = await AsyncStorage.getItem("mypage");
+        if (cached) {
+          setSections(JSON.parse(cached));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+
     getSections();
-  }, []);
+  }, [isValidating]);
 
   return (
     <ScrollView

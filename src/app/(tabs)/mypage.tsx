@@ -1,13 +1,9 @@
 import { Mypage } from "@/components/Mypage";
-import { useServerValidation } from "@/hooks/useServerValidation";
 import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function Layout() {
-  const { isValidating } = useServerValidation();
-  if (isValidating) return null;
-
+export default function MyPageScreen() {
   return (
     <>
       <Tab.Navigator>

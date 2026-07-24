@@ -1,23 +1,19 @@
-import { MyReview } from "@/components/MyReview";
-import { useServerValidation } from "@/hooks/useServerValidation";
+import { MyReviews } from "@/components/MyReviews";
 import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function Layout() {
-  const { isValidating } = useServerValidation();
-  if (isValidating) return null;
-
+export default function MyReviewsScreen() {
   return (
     <>
       <Tab.Navigator>
         <Tab.Screen
           name="タイトル"
-          component={() => <MyReview type="record" />}
+          component={() => <MyReviews type="record" />}
         />
         <Tab.Screen
           name="エピソード"
-          component={() => <MyReview type="episode_record" />}
+          component={() => <MyReviews type="episode_record" />}
         />
       </Tab.Navigator>
     </>
