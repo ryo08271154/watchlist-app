@@ -28,6 +28,12 @@ export default function RootLayout() {
             ),
           }}
         />
+        <Stack.Screen
+          name="myReviews"
+          options={{
+            title: "マイレビュー",
+          }}
+        />
       </Stack>
       <StatusBar style="dark" />
       <Toast />

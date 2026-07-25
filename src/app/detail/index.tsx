@@ -59,6 +59,8 @@ export default function DetailScreen() {
       });
     } else if (requestPathname === "/mypage") {
       router.replace("/mypage");
+    } else if (requestPathname === "/mypage/reviews") {
+      router.replace("/myReviews");
     }
   }
 

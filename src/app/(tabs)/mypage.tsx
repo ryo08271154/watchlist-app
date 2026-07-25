@@ -1,4 +1,18 @@
-import { RoutingWebView } from "@/components/RoutingWebView";
+import { Mypage } from "@/components/Mypage";
+import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+
+const Tab = createMaterialTopTabNavigator();
+
 export default function MyPageScreen() {
-  return <RoutingWebView url="/mypage" />;
+  return (
+    <>
+      <Tab.Navigator>
+        <Tab.Screen name="タイトル" component={() => <Mypage tab="titles" />} />
+        <Tab.Screen
+          name="エピソード"
+          component={() => <Mypage tab="episodes" />}
+        />
+      </Tab.Navigator>
+    </>
+  );
 }
