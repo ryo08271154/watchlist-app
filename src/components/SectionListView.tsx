@@ -11,43 +11,56 @@ import {
 
 type Props = {
   data: SectionItem[];
-  onRefresh: () => Promise<void>;
+  onRefresh?: () => Promise<void>;
+  horizontal?: boolean;
 };
 
-export function SectionListView({ data, onRefresh }: Props) {
+export function SectionListView({
+  data,
+  onRefresh,
+  horizontal = false,
+}: Props) {
   const [refreshing, setRefreshing] = useState(false);
 
   return (
     <FlatList
       data={data}
       keyExtractor={(item) => item.id.toString()}
+      horizontal={horizontal}
       renderItem={({ item }) => (
         <TouchableOpacity
-          style={styles.item}
+          style={[styles.item, horizontal && { maxWidth: 150 }]}
           onPress={() => router.push(`/detail?url=${item.url}`)}
         >
-          <Text>{item.name}</Text>
+          <Text style={styles.title}>{item.name}</Text>
           <Text>{item.description}</Text>
         </TouchableOpacity>
       )}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={async () => {
-            setRefreshing(true);
-            await onRefresh();
-            setRefreshing(false);
-          }}
-        />
+        onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await onRefresh();
+              setRefreshing(false);
+            }}
+          />
+        ) : undefined
       }
     />
   );
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   item: {
     padding: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "#ddd",
   },
 });

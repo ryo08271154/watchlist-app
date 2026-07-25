@@ -2,7 +2,7 @@ import { SettingsContext } from "@/context/SettingsContext";
 import { getServerStatus } from "@/utils/server";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -16,6 +16,7 @@ export default function SetupScreen() {
   const { settings, setSettings, resetSettings } = useContext(SettingsContext);
   const [isLoading, setIsLoading] = useState(false);
   const [url, setUrl] = useState(settings.serverUrl);
+  const [isOfficialServer, setIsOfficialServer] = useState(false);
 
   async function handleSave() {
     setIsLoading(true);
@@ -51,6 +52,11 @@ export default function SetupScreen() {
     router.replace("/");
   }
 
+  useEffect(() => {
+    if (!isOfficialServer) return;
+    handleSave();
+  }, [isOfficialServer]);
+
   if (isLoading) {
     return (
       <View
@@ -71,7 +77,32 @@ export default function SetupScreen() {
     <>
       <Text>サーバーURL</Text>
       <TextInput value={url} onChangeText={setUrl} keyboardType="url" />
-      <Button title="接続" onPress={handleSave} />
+      <View style={{ gap: 16 }}>
+        <Button title="接続" onPress={handleSave} />
+        <Button
+          color="green"
+          title="公式サーバーに接続"
+          onPress={async () => {
+            try {
+              const response = await fetch(
+                "https://api.github.com/repos/ryo08271154/watchlist",
+              );
+              if (!response.ok) return;
+
+              const data = await response.json();
+              if (!data.homepage) {
+                Alert.alert("エラー", "現在公式サーバーは利用できません");
+              }
+
+              setUrl(data.homepage);
+
+              setIsOfficialServer(true);
+            } catch {
+              Alert.alert("URL取得エラー", "接続を確認してください");
+            }
+          }}
+        />
+      </View>
     </>
   );
 }
