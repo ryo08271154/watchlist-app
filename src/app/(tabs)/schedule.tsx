@@ -255,6 +255,8 @@ export default function ScheduleScreen() {
 
     if (sections.length === 0) return;
 
+    if (process.env.EXPO_PUBLIC_STORE === "metahorizon") return;
+
     (async () => {
       const { status } = await Calendar.requestCalendarPermissions();
       if (status !== "granted") {
