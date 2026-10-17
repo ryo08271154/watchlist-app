@@ -14,7 +14,13 @@
         "buildType": "apk"
       }
     },
-    "production": {}
+    "production": {},
+    "metahorizon": {
+      "extends": "preview",
+      "env": {
+        "EXPO_PUBLIC_STORE": "metahorizon"
+      }
+    }
   },
   "submit": {
     "production": {}

@@ -23,6 +23,7 @@ export default function SettingsScreen() {
   const { latestVersion, isUpdateAvailable, updateDescription } =
     useUpdateCheck();
   const router = useRouter();
+  const isMetaHorizonStore = process.env.EXPO_PUBLIC_STORE === "metahorizon";
 
   async function deleteCalendar() {
     try {
@@ -68,18 +69,22 @@ export default function SettingsScreen() {
         title="サーバーURL設定"
       />
 
-      <Text style={styles.title}>
-        カレンダーアプリに視聴スケジュールを表示する
-      </Text>
-      <Switch
-        value={settings.useCalendar}
-        onValueChange={async (value) => {
-          if (value === false) {
-            await deleteCalendar();
-          }
-          setSettings({ ...settings, useCalendar: value });
-        }}
-      />
+      {!isMetaHorizonStore && (
+        <>
+          <Text style={styles.title}>
+            カレンダーアプリに視聴スケジュールを表示する
+          </Text>
+          <Switch
+            value={settings.useCalendar}
+            onValueChange={async (value) => {
+              if (value === false) {
+                await deleteCalendar();
+              }
+              setSettings({ ...settings, useCalendar: value });
+            }}
+          />
+        </>
+      )}
 
       <Text style={styles.title}>このアプリについて</Text>
       <Text style={styles.description}>
