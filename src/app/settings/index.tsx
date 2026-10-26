@@ -1,6 +1,7 @@
 import { UpdateAvailable } from "@/components/UpdateAvailable";
 import { SettingsContext } from "@/context/SettingsContext";
 import { useUpdateCheck } from "@/hooks/useUpdateCheck";
+import { getModel } from "@/utils/ai";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { reloadAppAsync } from "expo";
 import * as Application from "expo-application";
@@ -81,6 +82,28 @@ export default function SettingsScreen() {
                 await deleteCalendar();
               }
               setSettings({ ...settings, useCalendar: value });
+            }}
+          />
+        </>
+      )}
+      {!isMetaHorizonStore && (
+        <>
+          <Text style={styles.title}>AI機能</Text>
+          <Switch
+            value={settings.useAi}
+            onValueChange={async (value) => {
+              if (value === true) {
+                try {
+                  await getModel();
+                } catch {
+                  Alert.alert(
+                    "このデバイスではAI機能を有効化できません",
+                    "このデバイスはAI機能に対応していません",
+                  );
+                  return;
+                }
+              }
+              setSettings({ ...settings, useAi: value });
             }}
           />
         </>

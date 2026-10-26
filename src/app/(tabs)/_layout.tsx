@@ -1,12 +1,33 @@
 import { SettingsContext } from "@/context/SettingsContext";
+import { useServerValidation } from "@/hooks/useServerValidation";
+import { downloadFile } from "@/utils/file";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { Tabs, useRouter } from "expo-router";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { TouchableOpacity, View } from "react-native";
 
 export default function TabLayout() {
   const router = useRouter();
   const { settings } = useContext(SettingsContext);
+  const { isValidating } = useServerValidation();
+
+  useEffect(() => {
+    (async () => {
+      if (isValidating) return;
+      const serverUrl = settings.serverUrl;
+      if (!serverUrl) return;
+
+      try {
+        await downloadFile("reviews.csv", `${serverUrl}/export/reviews`);
+        await downloadFile(
+          "episode_reviews.csv",
+          `${serverUrl}/export/episode_reviews`,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [isValidating]);
 
   return (
     <Tabs>
@@ -18,9 +39,16 @@ export default function TabLayout() {
             <Ionicons size={28} name="home" color={color} />
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.push("/search")}>
-              <Ionicons size={28} name="search" />
-            </TouchableOpacity>
+            <View style={{ flexDirection: "row", gap: 16 }}>
+              {settings.useAi && (
+                <TouchableOpacity onPress={() => router.push("/chat")}>
+                  <Ionicons size={28} name="chatbubbles" />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={() => router.push("/search")}>
+                <Ionicons size={28} name="search" />
+              </TouchableOpacity>
+            </View>
           ),
         }}
       />
