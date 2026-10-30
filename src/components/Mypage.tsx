@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { SectionListView } from "./SectionListView";
+import Summary from "./Summary";
 
 const Title = [
   "視聴中",
@@ -82,6 +83,18 @@ export function Mypage({ tab }: Props) {
         />
       }
     >
+      {settings.useAi && (
+        <>
+          <Text style={styles.title}>AI概要</Text>
+          <Summary
+            prompt={`最近の${tab === "titles" ? "タイトル" : "エピソード"}レビューをもとに、ユーザーの視聴傾向と印象に残っている点を日本語で簡潔に5文程度で概要としてまとめてください。レビューの情報にないものは含めないでください。`}
+            refreshing={refreshing}
+            includeTitles={tab === "titles"}
+            includeEpisodes={tab === "episodes"}
+          />
+        </>
+      )}
+
       {sections.map((section, index) => {
         if (tab === "titles" && index >= 5) return null;
         if (tab === "episodes" && index <= 5) return null;

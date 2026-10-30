@@ -77,6 +77,7 @@ const openPage = tool({
 });
 
 async function getReviews(count: number = 10) {
+  // 不要な項目を除いて取得
   const titles = Papa.parse(await getFile("downloads/reviews.csv"), {
     header: true,
     skipEmptyLines: true,
@@ -109,9 +110,15 @@ async function loadModel(): Promise<AdkProvider> {
   });
 
   const supported = await adk.isNanoSupported();
-  if (!supported) throw new Error("Gemini Nano not supported on this device");
+  if (!supported) {
+    adk = null;
+    throw new Error("Gemini Nano not supported on this device");
+  }
   const ready = await adk.isAvailable("genai-nano");
-  if (!ready) throw new Error("Gemini Nano not ready yet");
+  if (!ready) {
+    adk = null;
+    throw new Error("Gemini Nano not ready yet");
+  }
 
   return adk;
 }
