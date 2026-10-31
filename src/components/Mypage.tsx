@@ -84,15 +84,12 @@ export function Mypage({ tab }: Props) {
       }
     >
       {settings.useAi && (
-        <>
-          <Text style={styles.title}>AI概要</Text>
-          <Summary
-            prompt={`最近の${tab === "titles" ? "タイトル" : "エピソード"}レビューをもとに、ユーザーの視聴傾向と印象に残っている点を日本語で簡潔に5文程度で概要としてまとめてください。レビューの情報にないものは含めないでください。`}
-            refreshing={refreshing}
-            includeTitles={tab === "titles"}
-            includeEpisodes={tab === "episodes"}
-          />
-        </>
+        <Summary
+          prompt={`最近の${tab === "titles" ? "タイトル" : "エピソード"}レビューをもとに、ユーザーの視聴傾向と印象に残っている点を日本語で簡潔に5文程度で概要としてまとめてください。レビューの情報にないものは含めないでください。`}
+          refreshing={refreshing}
+          includeTitles={tab === "titles"}
+          includeEpisodes={tab === "episodes"}
+        />
       )}
 
       {sections.map((section, index) => {
