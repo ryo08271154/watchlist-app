@@ -1,6 +1,6 @@
 import { SectionItem } from "@/types/section";
 import { router } from "expo-router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import {
   FlatList,
   RefreshControl,
@@ -13,12 +13,16 @@ type Props = {
   data: SectionItem[];
   onRefresh?: () => Promise<void>;
   horizontal?: boolean;
+  header?: ReactElement | null;
+  footer?: ReactElement | null;
 };
 
 export function SectionListView({
   data,
   onRefresh,
   horizontal = false,
+  header,
+  footer,
 }: Props) {
   const [refreshing, setRefreshing] = useState(false);
 
@@ -27,6 +31,8 @@ export function SectionListView({
       data={data}
       keyExtractor={(item) => item.id.toString()}
       horizontal={horizontal}
+      ListHeaderComponent={header}
+      ListFooterComponent={footer}
       renderItem={({ item }) => (
         <TouchableOpacity
           style={[styles.item, horizontal && { maxWidth: 150 }]}
