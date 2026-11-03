@@ -40,11 +40,11 @@ export default function TabLayout() {
           ),
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 16 }}>
-              {settings.useAi && (
+              {/* {settings.useAi && (
                 <TouchableOpacity onPress={() => router.push("/chat")}>
                   <Ionicons size={28} name="chatbubbles" />
                 </TouchableOpacity>
-              )}
+              )} */}
               <TouchableOpacity onPress={() => router.push("/search")}>
                 <Ionicons size={28} name="search" />
               </TouchableOpacity>

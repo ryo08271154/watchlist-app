@@ -1,13 +1,19 @@
 import { SectionListView } from "@/components/SectionListView";
+import Summary from "@/components/Summary";
 import { SettingsContext } from "@/context/SettingsContext";
 import { useServerValidation } from "@/hooks/useServerValidation";
 import { SectionItem } from "@/types/section";
 import { parseSection } from "@/utils/parse";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@react-native-vector-icons/ionicons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { BackHandler, TouchableOpacity } from "react-native";
 
 export default function MyListDetailScreen() {
   const { settings } = useContext(SettingsContext);
@@ -56,6 +62,20 @@ export default function MyListDetailScreen() {
     getTitles();
   }, [isValidating]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          router.replace("/mylist");
+          return true;
+        },
+      );
+
+      return () => subscription.remove();
+    }, []),
+  );
+
   return (
     <>
       <Stack.Screen
@@ -74,7 +94,20 @@ export default function MyListDetailScreen() {
           ),
         }}
       />
-      <SectionListView data={titles} onRefresh={getTitles} />
+      <SectionListView
+        data={titles}
+        onRefresh={getTitles}
+        header={
+          titles.length > 0 ? (
+            <Summary
+              prompt={`以下はマイリスト「${title}」に登録されている作品の一覧です。作品名、説明から読み取れる内容だけを使い、一覧全体の特徴や共通点、注目すべき作品を日本語で簡潔に5文程度で概要としてまとめてください。データにない作品情報や評価を推測せず、作品をすべて列挙するのではなく、一覧の傾向が伝わる文章にしてください。登録作品:
+                ${JSON.stringify(
+                  titles.map(({ id, episodeTitle, url, ...rest }: any) => rest),
+                )}`}
+            />
+          ) : null
+        }
+      />
     </>
   );
 }
