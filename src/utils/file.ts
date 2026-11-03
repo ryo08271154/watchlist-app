@@ -36,5 +36,8 @@ export async function downloadFile(
     idempotent: true,
   });
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to download ${url}: ${response.status}`);
+  }
   return await saveFile(`downloads/${filename}`, await response.text());
 }
