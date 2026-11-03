@@ -16,7 +16,7 @@ type SettingsContextType = {
   resetSettings: () => Promise<void>;
 };
 export const SettingsContext = createContext<SettingsContextType>({
-  settings: { serverUrl: "", useCalendar: false },
+  settings: { serverUrl: "", useCalendar: false, useAi: false },
   setSettings: () => {},
   resetSettings: async () => {},
 });
@@ -29,6 +29,7 @@ export const SettingsProvider: FC<{ children: ReactNode }> = ({
   const [settings, setSettings] = useState<Settings>({
     serverUrl: "",
     useCalendar: false,
+    useAi: false,
   });
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -48,7 +49,11 @@ export const SettingsProvider: FC<{ children: ReactNode }> = ({
 
   async function resetSettings() {
     await AsyncStorage.removeItem("settings");
-    setSettings({ serverUrl: "", useCalendar: false });
+    setSettings({
+      serverUrl: "",
+      useCalendar: false,
+      useAi: false,
+    });
     await loadSettings();
   }
 

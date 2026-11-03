@@ -1,3 +1,4 @@
+import Summary from "@/components/Summary";
 import { SettingsContext } from "@/context/SettingsContext";
 import { useServerValidation } from "@/hooks/useServerValidation";
 import { SectionItem } from "@/types/section";
@@ -325,6 +326,19 @@ export default function ScheduleScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       >
+        {settings.useAi && (
+          <>
+            {sections.length > 0 && (
+              <Summary
+                prompt={`以下の7日間視聴スケジュールに含まれる予定を、簡潔に5文程度でスケジュールから読み取れる傾向などを含めた概要としてまとめてください。視聴スケジュール: ${JSON.stringify(
+                  sections,
+                )}`}
+                refreshing={refreshing}
+              />
+            )}
+          </>
+        )}
+
         {sections.map((items, index) => {
           // 何もない日は表示しない
           if (items.length === 0) return null;

@@ -34,6 +34,7 @@ export default function RootLayout() {
             title: "マイレビュー",
           }}
         />
+        <Stack.Screen name="chat" options={{ title: "AI" }} />
       </Stack>
       <StatusBar style="dark" />
       <Toast />
