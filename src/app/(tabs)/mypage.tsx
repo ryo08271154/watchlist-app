@@ -1,18 +1,25 @@
 import { Mypage } from "@/components/Mypage";
-import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+import { useState } from "react";
+import { useWindowDimensions } from "react-native";
+import { TabView } from "react-native-tab-view";
 
-const Tab = createMaterialTopTabNavigator();
+const routes = [
+  { key: "titles", title: "タイトル" },
+  { key: "episodes", title: "エピソード" },
+];
 
 export default function MyPageScreen() {
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+
   return (
-    <>
-      <Tab.Navigator>
-        <Tab.Screen name="タイトル" component={() => <Mypage tab="titles" />} />
-        <Tab.Screen
-          name="エピソード"
-          component={() => <Mypage tab="episodes" />}
-        />
-      </Tab.Navigator>
-    </>
+    <TabView
+      navigationState={{ index, routes }}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+      renderScene={({ route }) => (
+        <Mypage tab={route.key === "titles" ? "titles" : "episodes"} />
+      )}
+    />
   );
 }

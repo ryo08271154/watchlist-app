@@ -1,21 +1,27 @@
 import { MyReviews } from "@/components/MyReviews";
-import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+import { useState } from "react";
+import { useWindowDimensions } from "react-native";
+import { TabView } from "react-native-tab-view";
 
-const Tab = createMaterialTopTabNavigator();
+const routes = [
+  { key: "titles", title: "タイトル" },
+  { key: "episodes", title: "エピソード" },
+];
 
 export default function MyReviewsScreen() {
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+
   return (
-    <>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="タイトル"
-          component={() => <MyReviews type="record" />}
+    <TabView
+      navigationState={{ index, routes }}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+      renderScene={({ route }) => (
+        <MyReviews
+          type={route.key === "titles" ? "record" : "episode_record"}
         />
-        <Tab.Screen
-          name="エピソード"
-          component={() => <MyReviews type="episode_record" />}
-        />
-      </Tab.Navigator>
-    </>
+      )}
+    />
   );
 }
