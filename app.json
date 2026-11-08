@@ -38,7 +38,8 @@
             "minSdkVersion": 26,
             "packagingOptions": {
               "exclude": ["META-INF/INDEX.LIST", "META-INF/DEPENDENCIES"]
-            }
+            },
+            "enableMinifyInReleaseBuilds": false
           }
         }
       ],
@@ -62,6 +63,21 @@
             "singleShareMimeTypes": ["text/plain"],
             "multipleShareMimeTypes": ["text/plain"]
           }
+        }
+      ],
+      [
+        "expo-widgets",
+        {
+          "enableAndroid": true,
+          "widgets": [
+            {
+              "name": "WatchScheduleWidget",
+              "displayName": "視聴スケジュール",
+              "description": "視聴スケジュールを表示します。",
+              "targetCellWidth": 1,
+              "targetCellHeight": 1
+            }
+          ]
         }
       ]
     ],

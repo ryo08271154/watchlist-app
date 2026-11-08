@@ -3,6 +3,7 @@ import { SettingsContext } from "@/context/SettingsContext";
 import { useServerValidation } from "@/hooks/useServerValidation";
 import { SectionItem } from "@/types/section";
 import { parseSection } from "@/utils/parse";
+import WatchScheduleWidget from "@/widgets/WatchScheduleWidget";
 import DateTimePicker from "@expo/ui/community/datetime-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "@react-native-vector-icons/ionicons";
@@ -46,7 +47,10 @@ export default function ScheduleScreen() {
         settings.serverUrl,
       );
 
-      await AsyncStorage.setItem("schedule", JSON.stringify(sections));
+      if (startDate.getDate() === new Date().getDate()) {
+        await AsyncStorage.setItem("schedule", JSON.stringify(sections));
+        WatchScheduleWidget.updateSnapshot({ sections });
+      }
 
       setSections(sections);
     } catch {}

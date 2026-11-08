@@ -13,8 +13,8 @@ type Props = {
   data: SectionItem[];
   onRefresh?: () => Promise<void>;
   horizontal?: boolean;
-  header?: ReactElement | null;
-  footer?: ReactElement | null;
+  header?: ReactElement | undefined;
+  footer?: ReactElement | undefined;
 };
 
 export function SectionListView({

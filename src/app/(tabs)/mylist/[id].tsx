@@ -105,7 +105,7 @@ export default function MyListDetailScreen() {
                   titles.map(({ id, episodeTitle, url, ...rest }: any) => rest),
                 )}`}
             />
-          ) : null
+          ) : undefined
         }
       />
     </>
